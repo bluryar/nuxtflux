@@ -1,0 +1,118 @@
+<script setup lang="ts">
+import { useElementBounding, useInfiniteScroll, useMounted } from '@vueuse/core'
+import { useInjectApiAdapter } from './stores/useApiAdapter'
+import EntriesListItem from './EntriesListItem.vue'
+import { useProvideLoadMore } from './stores/useEntriesLoadMore'
+import EntriesListToggleRadioGroup from './EntriesListToggleRadioGroup.vue'
+import EntriesMarkAllReadButton from './EntriesMarkAllReadButton.vue'
+import EntriesListSearchForm from './EntriesListSearchForm.vue'
+
+const entriesInjection = useInjectApiAdapter()
+
+const scrollbarRef = shallowRef<HTMLElement>()
+
+const {
+  list: entries,
+  loadingMore,
+  loadMore,
+  noMore,
+  init,
+} = useProvideLoadMore({
+  data: entriesInjection.entries,
+  pending: entriesInjection.loading,
+  execute: entriesInjection.execute,
+  query: entriesInjection.query,
+  refresh: entriesInjection.refresh,
+})
+
+watch(entries, (list) => {
+  entriesInjection.setViewingEntries(list)
+})
+
+const isMounted = useMounted()
+watch([
+  isMounted,
+  entriesInjection.id,
+  entriesInjection.mode,
+], ([mounted]) => {
+  if (!mounted)
+    return
+  init()
+  loadMore()
+}, { immediate: true })
+
+useInfiniteScroll(scrollbarRef, () => {
+  if (noMore.value || loadingMore.value)
+    return
+
+  return loadMore()
+}, {
+  canLoadMore() {
+    return !loadingMore.value
+  },
+})
+
+const containerRef = shallowRef<HTMLDivElement>()
+const { right, bottom } = useElementBounding(containerRef)
+</script>
+
+<template>
+  <div ref="containerRef" class="flex flex-col">
+    <NBackTop
+      v-if="scrollbarRef"
+      :theme-overrides="{
+        height: '2.25rem',
+        width: '2.25rem',
+      }"
+      :listen-to="scrollbarRef" :to="containerRef" :bottom="`calc(100vh - ${bottom - 60}px)`" :right="`calc(100vw - ${right - 20}px)`"
+    >
+      <div class="i-line-md:upload-outline-loop text-2xl" />
+    </NBackTop>
+
+    <EntriesListSearchForm class="input-area" />
+    <div v-if="loadingMore && !entries.length" class="list">
+      <EntriesListItem
+        v-for="i in 5"
+        :key="`entries-item-empty#${i}`" :loading="loadingMore"
+      />
+    </div>
+    <div v-else ref="scrollbarRef" class="list">
+      <EntriesListItem
+        v-for="entry, idx in entries"
+        :key="`entries-item#${entry.id}#${idx}`"
+        :entry="entry"
+        :loading="loadingMore"
+      />
+
+      <div class="h-full w-full flex items-center justify-center prose">
+        <div v-if="noMore">
+          {{ $t('list.empty') }}
+        </div>
+        <NButton
+          v-else
+          quaternary
+          loading
+        />
+      </div>
+    </div>
+    <div class="toggle-area">
+      <EntriesListToggleRadioGroup />
+      <EntriesMarkAllReadButton />
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.list {
+  @apply h-full w-full flex flex-col gap-2.25 pb-4 uno-scrollbar uno-scrollbar-rounded px-3;
+}
+
+.input-area,
+.toggle-area {
+  @apply shrink-0 grow-0 w-full px-3;
+}
+
+.toggle-area {
+  @apply flex items-center justify-between;
+}
+</style>
