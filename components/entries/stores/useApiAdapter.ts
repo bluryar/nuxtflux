@@ -33,8 +33,6 @@ const [
     pendingEntries,
     pendingEntriesByCategory,
     pendingEntriesByFeed,
-    viewingEntry,
-    viewingEntries,
   } = storeToRefs(entriesStore)
 
   const entries = computed<EntryRes>({
@@ -138,17 +136,12 @@ const [
   return {
     mode,
     id,
-    viewingEntry,
-    viewingEntries,
 
     entries,
     loading,
     query,
     execute,
     refresh,
-
-    setViewingEntry: entriesStore.setViewingEntry,
-    setViewingEntries: entriesStore.setViewingEntries,
   }
 })
 

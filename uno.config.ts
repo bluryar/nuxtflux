@@ -82,7 +82,7 @@ export default defineConfig({
       scrollbarHeight: 'var(--scrollbar-height)',
       scrollbarTrackRadius: 'var(--scrollbar-border-radius)',
       scrollbarThumbRadius: 'var(--scrollbar-border-radius)',
-      scrollbarTrackColor: 'transparent',
+      scrollbarTrackColor: 'rgba(255,255,255,0)',
       scrollbarThumbColor: 'var(--scrollbar-color)',
       varPrefix: 'uno',
       prefix: 'uno-',

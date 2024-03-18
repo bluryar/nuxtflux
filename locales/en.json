@@ -1,5 +1,5 @@
 {
-  "api_ling_pai": "API token",
+  "api_ling_pai": "API Token",
   "da_kai_yuan_lian_jie": "Open source link",
   "date.full.format": "MMMM DD, YYYY AT HH:mm",
   "deng_lu": "Log in",
@@ -12,8 +12,9 @@
   "entry.form.search.placeholder": "Search title or content...",
   "entry.title.empty": "No title yet",
   "feeds.mark.all": "Mark all as read",
-  "fu_wu_qi_di_zhi": "server address",
+  "fu_wu_qi_di_zhi": "Server Address",
   "fu_wu_qi_di_zhi_bi_tian": "Server address required",
+  "ji_zhu_mi_ma": "Remember Password",
   "lian_jie_miniflux_fu_wu_qi": "Connect to Miniflux server",
   "list.empty": "no more",
   "menu.category": "Categories",
@@ -46,7 +47,7 @@
     "yesterday": "yesterday"
   },
   "token_bi_tian": "token required",
-  "yong_hu_ming": "username",
+  "yong_hu_ming": "Username",
   "yong_hu_ming_bi_tian": "Username required",
   "zhua_qu_quan_wen": "Fetch full text"
 }

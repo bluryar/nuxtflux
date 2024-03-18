@@ -35,4 +35,3 @@ const params = computed(() => {
     <Entries :id="params.id" class="h-full w-full" :mode="params.mode" />
   </div>
 </template>
-~/components/entries/stores/store

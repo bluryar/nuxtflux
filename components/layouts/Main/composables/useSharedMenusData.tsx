@@ -1,11 +1,15 @@
 import { createSharedComposable } from '@vueuse/core'
-import { type MenuOption, NSkeleton } from 'naive-ui'
+import { type MenuOption as NMenuOption, NSkeleton } from 'naive-ui'
 import type { MenuDividerOption } from 'naive-ui/lib'
 import type { TypedRouteLocationRaw } from '@typed-router'
-import MenuLink from './MenuLink.vue'
+import MenuLink from '../MenuLink.vue'
 import { NuxtLink } from '#components'
 import type { ICategory } from '~/models/Category'
 import type { IFeed } from '~/models/Feed'
+
+type MenuOption = NMenuOption & {
+  $label?: string
+}
 
 export const useSharedMenusData = createSharedComposable(() => {
   const { t } = useI18n()
@@ -42,47 +46,50 @@ export const useSharedMenusData = createSharedComposable(() => {
   }
 
   const menus = reactive<MenuOption[]>([
-  {
-    label: () => (
-      <NuxtLink to={HOME_ROUTE}>
-        {t('menu.index')}
-      </NuxtLink>
-    ),
-    icon: () => <div class="i-lucide:newspaper"></div>,
-    key: getKey(HOME_ROUTE),
-    extra: allExtra,
-  } satisfies MenuOption,
-  {
-    type: 'divider',
-    key: 'divider',
-  } satisfies MenuDividerOption,
-  {
-    label: () => t('menu.category'),
-    key: 'categories',
-    icon: () => <div class="i-lucide:inbox"></div>,
-    children: [
-      {
-        key: 'categories-skeleton',
-        label: () => (<NSkeleton class="text-1.5rem" />),
-      },
-    ],
-  } satisfies MenuOption,
-  {
-    label: () => t('menu.feeds'),
-    key: 'feeds',
-    icon: () => <div class="i-lucide:mailbox"></div>,
-    children: [
-      {
-        key: 'categories-skeleton',
-        label: () => (<NSkeleton class="text-1.5rem" />),
-      },
-    ],
-  } satisfies MenuOption,
+    {
+      label: () => (
+        <NuxtLink to={HOME_ROUTE}>
+          {t('menu.index')}
+        </NuxtLink>
+      ),
+      $label: t('menu.index'),
+      icon: () => <div class="i-lucide:newspaper"></div>,
+      key: getKey(HOME_ROUTE),
+      extra: allExtra,
+    } satisfies MenuOption,
+    {
+      type: 'divider',
+      key: 'divider',
+    } satisfies MenuDividerOption,
+    {
+      label: () => t('menu.category'),
+      key: 'categories',
+      $label: t('menu.category'),
+      icon: () => <div class="i-lucide:inbox"></div>,
+      children: [
+        {
+          key: 'categories-skeleton',
+          label: () => (<NSkeleton class="text-1.5rem" />),
+        },
+      ],
+    } satisfies MenuOption,
+    {
+      label: () => t('menu.feeds'),
+      key: 'feeds',
+      $label: t('menu.feeds'),
+      icon: () => <div class="i-lucide:mailbox"></div>,
+      children: [
+        {
+          key: 'categories-skeleton',
+          label: () => (<NSkeleton class="text-1.5rem" />),
+        },
+      ],
+    } satisfies MenuOption,
   ])
 
   function getKey(route: TypedRouteLocationRaw) {
     const { fullPath, name } = router.resolve(route)
-    const [,mode, id] = fullPath.match(ENTRY_ROUTE_KEY_REG) || []
+    const [, mode, id] = fullPath.match(ENTRY_ROUTE_KEY_REG) || []
     return `${name}-${mode}-${id}`
   }
 
@@ -95,6 +102,7 @@ export const useSharedMenusData = createSharedComposable(() => {
 
       return {
         key: getKey(route),
+        $label: title,
         label: () => (<MenuLink to={route} title={title} />),
         extra: mode === 'feeds'
           ? () => feedExtra(id)
@@ -129,9 +137,17 @@ export const useSharedMenusData = createSharedComposable(() => {
     loaded = true
   }
 
+  const route = useRoute()
+
+  const activeKey = ref<string>()
+  watchEffect(() => {
+    activeKey.value = getKey(route)
+  })
+
   return {
     menus,
     init,
     getKey,
+    activeKey,
   }
 })

@@ -1,4 +1,4 @@
-import { StorageSerializers, useLocalStorage, watchPausable } from '@vueuse/core'
+import { StorageSerializers, syncRef, useLocalStorage, useSessionStorage, watchPausable } from '@vueuse/core'
 import { createDiscreteApi } from 'naive-ui'
 import { User } from '~/models/User'
 
@@ -7,23 +7,24 @@ export type LoginType = 'basic' | 'token'
 interface BasicLoginForm {
   username: string
   type: LoginType
-  remember: boolean
   baseUrl: string
   password: string
 }
 interface TokenLoginForm {
   token: string
   type: LoginType
-  remember: boolean
   baseUrl: string
 }
 const { message } = createDiscreteApi(['message'])
 
 export const useUserStore = defineStore('user', () => {
-  const loginType = ref<LoginType>('basic')
+  const basicLoginForm = useLocalStorage<BasicLoginForm>('BasicLoginForm', initBasicLoginForm())
+  const tokenLoginForm = useLocalStorage<TokenLoginForm>('TokenLoginForm', initTokenLoginForm())
 
-  const basicLoginForm = ref<BasicLoginForm>(initBasicLoginForm())
-  const tokenLoginForm = ref<TokenLoginForm>(initTokenLoginForm())
+  const loginType = useLocalStorage<LoginType>('user.login-type', 'basic')
+  const token = useSessionStorage<string>('user.token', '')
+  const rememberStorage = useLocalStorage<BasicLoginForm | TokenLoginForm | null>('user.login-remember', null, { serializer: StorageSerializers.object })
+  const isRemember = useLocalStorage('user.login-is-remember', false)
 
   const {
     execute: executeUserInfo,
@@ -35,65 +36,57 @@ export const useUserStore = defineStore('user', () => {
     transform: data => new User(data),
   })
 
+  const app = useNuxtApp()
   const basicToken = computed(() => `basic ${btoa(`${toValue(basicLoginForm).username}:${toValue(basicLoginForm).password}`)}`)
   const tokenToken = computed(() => `${toValue(tokenLoginForm).token}`)
-  const token = computed(() => loginType.value === 'basic' ? basicToken.value : tokenToken.value)
-  const isRemember = computed(() => loginType.value === 'basic' ? toValue(basicLoginForm).remember : toValue(tokenLoginForm).remember)
-  const rememberStorage = useLocalStorage<BasicLoginForm | TokenLoginForm | null>('login_remember', null, { serializer: StorageSerializers.object })
+  const getToken = () => loginType.value === 'basic' ? basicToken.value : tokenToken.value
   const loginForm = computed(() => loginType.value === 'basic' ? basicLoginForm.value : tokenLoginForm.value)
   const baseUrl = computed(() => loginForm.value.baseUrl)
-  const hasLogin = computed(() => !!token.value)
+  const hasLogin = computed(() => !!token.value && token.value !== btoa(':'))
 
   const loginLoading = computed(() => status.value === 'pending')
 
-  // const { t } = useI18n()
-  const app = useNuxtApp()
-
-  const syncRemember = (data: BasicLoginForm | TokenLoginForm | null) => {
-    if (!data)
-      return
-
-    const _loginType = data.type
-    loginType.value = _loginType
-    if (loginType.value === 'basic')
-      basicLoginForm.value = data as BasicLoginForm
-
-    else
-      tokenLoginForm.value = data as TokenLoginForm
-  }
-  const {
-    pause,
-    resume,
-  } = watchPausable(rememberStorage, syncRemember, {
-    immediate: !!1,
-  })
-
   const login = async () => {
     await nextTick()
-
-    if (isRemember.value) {
-      pause()
-      rememberStorage.value = loginForm.value
-      await nextTick()
-      resume()
-    }
+    token.value = getToken()
 
     await executeUserInfo()
 
     if (status.value === 'success') {
+      if (isRemember.value)
+        rememberStorage.value = loginForm.value
+      else
+        rememberStorage.value = null
+
       message.success(app.$i18n.t('deng_lu_cheng_gong_huan_ying_hui_lai'))
 
       navigateTo('/')
     }
   }
 
-  const logout = () => {
+  const logout = async () => {
     basicLoginForm.value = initBasicLoginForm()
     tokenLoginForm.value = initTokenLoginForm()
 
     loginType.value = 'basic'
-    syncRemember(rememberStorage.value)
-    navigateTo('/login')
+    token.value = ''
+
+    await nextTick()
+    await navigateTo('/login')
+  }
+
+  const syncRememberUser = () => {
+    if (isRemember.value) {
+      if (loginType.value === 'basic')
+        basicLoginForm.value = rememberStorage.value as BasicLoginForm
+      else
+        tokenLoginForm.value = rememberStorage.value as TokenLoginForm
+    }
+    else {
+      basicLoginForm.value = initBasicLoginForm()
+      tokenLoginForm.value = initTokenLoginForm()
+    }
+    token.value = ''
   }
 
   return {
@@ -105,16 +98,18 @@ export const useUserStore = defineStore('user', () => {
     baseUrl,
     token,
     loginLoading,
+    isRemember,
+    rememberStorage,
     login,
     logout,
     executeUserInfo,
+    syncRememberUser,
   }
 })
 
 function initTokenLoginForm(): TokenLoginForm {
   return {
     type: 'token',
-    remember: false,
     baseUrl: '',
     token: '',
   }
@@ -123,7 +118,6 @@ function initTokenLoginForm(): TokenLoginForm {
 function initBasicLoginForm(): BasicLoginForm {
   return {
     type: 'basic',
-    remember: false,
     baseUrl: '',
     username: '',
     password: '',

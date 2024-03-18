@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import EntriesList from './EntriesList.vue'
 import { type Mode, useProvideApiAdapter } from './stores/useApiAdapter'
+import { useViewingEntries } from './stores/useViewingEntries'
 import { NuxtPage } from '#components'
 import { usePageTransition } from '~/composables/usePageTransition'
 
@@ -19,9 +20,13 @@ const { id, mode } = toRefs(props)
 
 const { listWidth } = toRefs(props)
 
-const { viewingEntry, setViewingEntry } = useProvideApiAdapter({ id, mode })
+useProvideApiAdapter({ id, mode })
 const { isTransiting } = usePageTransition()
 
+const {
+  viewingEntry,
+  setViewingEntry,
+} = useViewingEntries()
 setViewingEntry(null)
 
 const isReading = computed(() => !!viewingEntry.value)

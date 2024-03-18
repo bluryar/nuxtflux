@@ -22,7 +22,7 @@ function openExternal(url?: string) {
 </script>
 
 <template>
-  <div class="inline-block animate-fade-in-down hover:(underline underline-wavy)" :title="$t('da_kai_yuan_lian_jie')" @click="openExternal(entry.feed?.site_url)">
+  <div class="inline-block animate-fade-in-down cursor-pointer hover:(underline underline-wavy)" :title="$t('da_kai_yuan_lian_jie')" @click="openExternal(entry.feed?.site_url)">
     <a relative flex items-center gap1 pr2.5em no-underline>
       {{ entry.author || entry.feed?.title || $t('entry.author.empty') }}
       <div v-if="ready" inline-block class="i-lucide:external-link absolute right-1em animate-fade-in animate-duration-500ms" />

@@ -5,30 +5,30 @@ import type { BuiltInGlobalTheme } from 'naive-ui/es/themes/interface'
 import { dateEnUS, dateZhCN, enUS, zhCN } from 'naive-ui'
 import { generate } from '@arco-design/color'
 
-const dark = generate('rgb(255, 112, 13)', { dark: true, list: true })
-const light = generate('rgb(234, 88, 12)', { list: true })
-
-const darkThemeOverrides = {
-  common: {
-    primaryColor: dark[6],
-    primaryColorHover: dark[5],
-    primaryColorPressed: dark[7],
-    primaryColorSuppl: dark[5],
-  },
-} as GlobalThemeOverrides
-const lightThemeOverrides = {
-  common: {
-    primaryColor: light[6],
-    primaryColorHover: light[5],
-    primaryColorPressed: light[7],
-    primaryColorSuppl: light[5],
-
-    bodyColor: '#f5f7f9',
-  },
-} as GlobalThemeOverrides
-
 export const useTheme = createSharedComposable(
   () => {
+    const dark = generate('rgb(255, 112, 13)', { dark: true, list: true })
+    const light = generate('rgb(234, 88, 12)', { list: true })
+
+    const darkThemeOverrides = {
+      common: {
+        primaryColor: dark[6],
+        primaryColorHover: dark[5],
+        primaryColorPressed: dark[7],
+        primaryColorSuppl: dark[5],
+      },
+    } as GlobalThemeOverrides
+    const lightThemeOverrides = {
+      common: {
+        primaryColor: light[6],
+        primaryColorHover: light[5],
+        primaryColorPressed: light[7],
+        primaryColorSuppl: light[5],
+
+        bodyColor: '#f5f7f9',
+      },
+    } as GlobalThemeOverrides
+
     const isDark = useDark({
       attribute: 'class',
       valueDark: 'dark',

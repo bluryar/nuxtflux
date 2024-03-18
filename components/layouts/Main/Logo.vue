@@ -27,6 +27,7 @@ const scope = effectScope()
 const logoRef = templateRef<HTMLElement | null>('logoRef')
 
 onMounted(() => scope.run(run))
+const title = import.meta.env.VITE_TITLE
 
 function setPaddingLeft(offset: MaybeRef<string>) {
   logoRef.value?.style.setProperty('--padding-left', toValue(offset))
@@ -65,12 +66,17 @@ function onClick() {
   toggleCollapsed()
   setContentOffsetLeft(isAsideCollapsed.value ? asideCollapsedWidth : asideWidth)
 }
+
+const isShowRestWidget = computed(() => isHoveringAside.value || !isAsideCollapsed.value || props.floating)
 </script>
 
 <template>
   <div ref="logoRef" class="logo">
-    <img :src="LogoURL" class="logo-image hover:animate-jello">
-    <NButton v-if="isHoveringAside || !isAsideCollapsed || floating" class="toggle" quaternary @click="onClick">
+    <div class="flex cursor-pointer items-center gap2 hover:animate-jello" @click="$router.push('/')">
+      <img :src="LogoURL" class="logo-image">
+      <span v-if="isShowRestWidget" class="text-lg">{{ title }}</span>
+    </div>
+    <NButton v-if="isShowRestWidget" class="toggle" quaternary @click="onClick">
       <div v-if="floating" class="i-line-md:close-circle" />
       <Transition
         v-else name="custom"
@@ -120,4 +126,3 @@ function onClick() {
   }
 }
 </style>
-~/components/layouts/Main/store

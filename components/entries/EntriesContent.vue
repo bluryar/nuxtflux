@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { format } from '@formkit/tempo'
-import { useInjectApiAdapter } from './stores/useApiAdapter'
 import AuthorButton from './AuthorButton.vue'
 import PullContentButton from './PullContentButton.vue'
+import StarButton from './StarButton.vue'
+import { useViewingEntries } from './stores/useViewingEntries'
 import type { Entry } from '~/models/Entry'
 
 const props = withDefaults(
@@ -14,7 +15,7 @@ const props = withDefaults(
 
 const fetchedContent = ref('')
 const entry = computed(() => props.entry)
-const { setViewingEntry, viewingEntry, viewingEntries } = useInjectApiAdapter()
+const { setViewingEntry, viewingEntry, viewingEntries } = useViewingEntries()
 const { executeCounters } = useFeedsStore()
 const { t, locale } = useI18n()
 
@@ -33,6 +34,7 @@ const {
 })
 
 watchEffect(async () => {
+  // entry 可以从外部传入，也可以自行通过id从接口获取
   if (props.entry && viewingEntry.value?.id !== props.entry.id)
     setViewingEntry(props.entry)
 }, {
@@ -44,14 +46,31 @@ watch(viewingEntry, async (entry) => {
     execute().then(() => executeCounters())
 
     entry.status = 'read'
-    const index = viewingEntries.value.findIndex(e => e.id === entry.id)
-    const target = viewingEntries.value[index]
-    if (target) {
-      viewingEntries.value[index] = entry
-      triggerRef(viewingEntries)
-    }
+
+    setViewingEntry(entry)
+    updateEntries(entry)
   }
 })
+
+function updateEntries(entry: Entry) {
+  const index = viewingEntries.value?.findIndex(e => e.id === entry.id)
+  const target = viewingEntries.value?.[index || 0]
+  if (target) {
+    viewingEntries.value![index || 0] = entry
+    triggerRef(viewingEntries)
+  }
+}
+
+function onUpdateEntryStarred(val: boolean) {
+  const entry = viewingEntry.value
+  if (entry) {
+    entry.starred = val
+
+    setViewingEntry(entry)
+
+    updateEntries(entry)
+  }
+}
 
 function openExternal(url?: string) {
   if (url && url.startsWith('http'))
@@ -60,7 +79,7 @@ function openExternal(url?: string) {
 </script>
 
 <template>
-  <div class="px-6 uno-scrollbar uno-scrollbar-rounded">
+  <div class="px-6 pb-6 uno-scrollbar uno-scrollbar-rounded">
     <NEmpty v-if="!entry" size="large" class="h-full flex items-center justify-center">
       <template #icon>
         <div class="i-fluent-mdl2:page" />
@@ -75,9 +94,10 @@ function openExternal(url?: string) {
           {{ entry.title || $t('entry.title.empty') }}
         </a>
       </h2>
-      <div class="flex">
-        <AuthorButton class="btn" :entry="entry" />
-        <PullContentButton class="btn" :entry="entry" @fetch-content="(val) => (fetchedContent = val || '')" />
+      <div v-if="viewingEntry" class="flex">
+        <AuthorButton class="btn" :entry="viewingEntry" />
+        <StarButton class="btn" :entry="viewingEntry" responsive @update-entry="onUpdateEntryStarred" />
+        <PullContentButton class="btn" :entry="viewingEntry" responsive @fetch-content="(val) => (fetchedContent = val || '')" />
       </div>
       <div class="my-2 w-full origin-center scale-y-50 border-1px" />
       <blockquote v-if="fetchedContent && fetchedContent !== entry?.content" class="max-h-300px bg-card px-6 uno-scrollbar uno-scrollbar-rounded" v-html="fetchedContent" />
@@ -99,6 +119,14 @@ function openExternal(url?: string) {
   code {
     @apply font-mono;
   }
+
+  blockquote {
+    border-left-width: 0.25rem;
+    border-style: solid;
+    border-color: var(--icon-color);
+    font-style: normal;
+    @apply px-4 ml--4 my6;
+  }
 }
 </style>
 
@@ -108,6 +136,6 @@ function openExternal(url?: string) {
 }
 
 .btn {
-  @apply text-xs color-gray hover:(cursor-pointer underline underline-wavy);
+  @apply text-xs color-gray hover:(underline underline-wavy);
 }
 </style>

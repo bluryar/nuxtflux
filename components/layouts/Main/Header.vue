@@ -7,28 +7,12 @@ import TranlationToggle from '@/components/icon/TranlationToggle.vue'
 import LogoURL from '@/assets/icon/Logo.svg?url'
 
 const {
-  locale,
-  locales,
-} = useI18n()
-
-const {
   logoSize,
   isScreenSmall,
   isShowFloatAside,
 } = useInjectLayoutStore()
 
-const storagedLocale = useLocalStorage('locale', locale)
-
 const user = useUserStore()
-
-const { isDark } = useTheme()
-
-const i18nSelectOptions = computed(() => {
-  return toValue(locales).map(({ name, code }) => ({
-    label: name,
-    value: code,
-  }))
-})
 
 function tryShowFloatAside() {
   if (!isScreenSmall.value)
@@ -46,7 +30,9 @@ function tryShowFloatAside() {
         enter-active-class="animate__animated animate__fadeIn animate__faster"
         leave-active-class="animate__animated animate__fadeOut animate__faster"
       >
-        <img v-if="isScreenSmall" :src="LogoURL" class="logo hover:animate-jello" @click="tryShowFloatAside">
+        <div v-if="isScreenSmall" class="flex gap2">
+          <img :src="LogoURL" class="logo hover:animate-jello" @click="tryShowFloatAside">
+        </div>
       </Transition>
       <a @click="$router.back()">
         <div class="flex gap2 text-text2 hover:animate-jello">
@@ -54,17 +40,16 @@ function tryShowFloatAside() {
         </div>
       </a>
     </div>
-    <div pointer-events-auto class="capsule">
-      <NPopselect v-model:value="storagedLocale" trigger="hover" :options="i18nSelectOptions">
-        <div class="icon">
-          <TranlationToggle />
-        </div>
-      </NPopselect>
 
-      <ThemeToggle v-model="isDark" class="icon" hover />
+    <div pointer-events-auto class="capsule">
+      <div class="flex gap2">
+        <TranlationToggle />
+        <ThemeToggle hover />
+      </div>
       <NDivider vertical />
-      <div class="icon i-lucide:power text-error" @click="user.logout" />
+      <div class="i-lucide:power cursor-pointer text-error" @click="user.logout" />
     </div>
+
     <Teleport to="body">
       <FloatAside v-if="isScreenSmall" v-model:visible="isShowFloatAside" />
     </Teleport>
@@ -80,11 +65,7 @@ function tryShowFloatAside() {
 
 .capsule {
   @apply bg-[var(--aside-background-color)] dark:(shadow-gray-700) rounded-full shadow-lg py-2 px-4;
-  @apply flex items-center gap-4;
+  @apply flex items-center;
   @apply text-18px;
-
-  .icon {
-    @apply h-1em w-1em cursor-pointer origin-center scale-110 transform-gpu;
-  }
 }
 </style>

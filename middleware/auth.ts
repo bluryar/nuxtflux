@@ -6,6 +6,7 @@ export default defineNuxtRouteMiddleware(async () => {
   if (!user.hasLogin)
     return navigateTo('/login')
 
+  // FIXME
   if (user.hasLogin && !user.userInfo)
     return await user.executeUserInfo()
 })

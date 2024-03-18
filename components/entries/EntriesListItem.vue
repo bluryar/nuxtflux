@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computedEager } from '@vueuse/core'
-import { useInjectApiAdapter } from './stores/useApiAdapter'
+import { useViewingEntries } from './stores/useViewingEntries'
 import type { IEntry } from '~/models/Entry'
 import FluentMdl2ImagePixel from '~/assets/FluentMdl2ImagePixel.svg?url'
 import FluentMdl2ImagePixelDark from '~/assets/FluentMdl2ImagePixelDark.svg?url'
@@ -15,10 +15,7 @@ const { isDark } = useTheme()
 const fallbackSrc = computed(() => isDark.value ? FluentMdl2ImagePixelDark : FluentMdl2ImagePixel)
 const imageSrc = computedEager(() => getFirstImage(props.entry?.content))
 
-const {
-  setViewingEntry,
-  viewingEntry,
-} = useInjectApiAdapter()
+const { setViewingEntry, viewingEntry } = useViewingEntries()
 
 const isActive = computed(() => viewingEntry.value !== null && viewingEntry.value?.id === props.entry?.id)
 
@@ -62,7 +59,7 @@ const el = shallowRef<HTMLElement | null>(null)
       }"
       class="cursor-pointer transition-all duration-500"
       :class="[
-        entry?.status === 'read' && 'not-hover:op-70%',
+        entry?.status === 'read' && !isActive && 'not-hover:op-70%',
         loading && 'hover:cursor-wait',
       ]"
       @click="setEntry"
@@ -85,12 +82,38 @@ const el = shallowRef<HTMLElement | null>(null)
       <NSkeleton v-if="loading" style="width: 5em" />
       <div v-else prose>
         <h4>{{ entry?.title || $t('entry.title.empty') }}</h4>
-        <span class="font-sans op-90%">
-          {{ entry?.author || entry?.feed?.title || $t('entry.author.empty') }}
-          <br>
-          <span>{{ timeAgo }}</span>
-        </span>
+        <div class="font-sans op-90%">
+          <div>
+            {{ entry?.author || entry?.feed?.title || $t('entry.author.empty') }}
+          </div>
+          <div class="flex items-center gap2">
+            <div
+              v-if="entry?.starred "
+              :class="[
+                entry?.starred && 'i-line-md:star-filled bg-primary mb-2px',
+              ]"
+            />
+            <div>
+              {{ timeAgo }}
+            </div>
+          </div>
+        </div>
       </div>
     </NCard>
   </div>
 </template>
+
+<!-- <style scoped>
+.is-favorite::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 40px; /* 控制梯形的底边宽度 */
+  height: 40px; /* 控制梯形的高度 */
+  background-color: var(--primary-color);
+  opacity: 0.8;
+  @apply shadow-lg;
+  clip-path: polygon(0 0, 40% 0, 100% 60%, 100% 100%);
+}
+</style> -->

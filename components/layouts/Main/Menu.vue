@@ -1,7 +1,8 @@
 <script lang="tsx" setup>
 import type { MenuProps } from 'naive-ui'
+import { useTitle } from '@vueuse/core'
 import { useInjectLayoutStore } from './store'
-import { useSharedMenusData } from './composables'
+import { useSharedMenusData } from './composables/useSharedMenusData'
 
 defineProps<{
   menuProps?: MenuProps
@@ -9,9 +10,9 @@ defineProps<{
 const { isMenuCollapsed, asidePaddingLeft, asideCollapsedWidth } = useInjectLayoutStore()
 
 const {
-  getKey,
   init,
   menus,
+  getKey,
 } = useSharedMenusData()
 
 onMounted(() => {

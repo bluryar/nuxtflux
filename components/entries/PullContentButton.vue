@@ -4,8 +4,11 @@ import type { Entry } from '~/models/Entry'
 const props = withDefaults(
   defineProps<{
     entry: Entry
+    responsive?: boolean
   }>(),
-  { },
+  {
+    responsive: true,
+  },
 )
 
 const emits = defineEmits<{
@@ -29,9 +32,20 @@ const loading = computed(() => status.value === 'pending')
 </script>
 
 <template>
-  <div class="flex items-center gap1" :title="$t('zhua_qu_quan_wen')" @click="() => execute().then(() => emits('fetch-content', data?.content))">
-    {{ $t('zhua_qu_quan_wen') }}
+  <div class="flex items-center gap1 pr-2" :title="$t('zhua_qu_quan_wen')" :disabled="loading" @click="() => !loading && execute().then(() => emits('fetch-content', data?.content))">
+    <div class="lt-sm:hidden">
+      {{ $t('zhua_qu_quan_wen') }}
+    </div>
     <div v-if="!loading" class="i-lucide:download" inline-block />
     <div v-else class="i-svg-spinners:bouncing-ball" inline-block />
   </div>
 </template>
+
+<style scoped>
+div[disabled='true'] {
+  @apply cursor-wait;
+}
+div[disabled='false'] {
+  @apply cursor-pointer;
+}
+</style>

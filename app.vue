@@ -1,12 +1,20 @@
 <script setup lang="ts">
+import '@unocss/reset/tailwind-compat.css'
 import 'animate.css'
+import 'vfonts/FiraCode.css'
+import 'vfonts/FiraSans.css'
 
-import('vfonts/FiraCode.css')
-import('vfonts/FiraSans.css')
+definePageMeta({
+  title: import.meta.env.VITE_TITLE,
+})
 
 const { load, theme, themeOverrides, locale, dateLocale } = useTheme()
 onMounted(() => {
   load()
+})
+
+useHead({
+  title: import.meta.env.VITE_TITLE,
 })
 </script>
 

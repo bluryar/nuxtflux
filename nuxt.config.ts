@@ -81,7 +81,7 @@ export default defineNuxtConfig({
   },
 
   unocss: {
-    preflight: true,
+    // preflight: true,
   },
 
   openFetch: {
@@ -93,4 +93,5 @@ export default defineNuxtConfig({
       },
     },
   },
+
 })

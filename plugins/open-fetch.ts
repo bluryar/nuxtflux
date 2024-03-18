@@ -40,9 +40,6 @@ export default defineNuxtPlugin({
                     : { 'X-Auth-Token': user.token },
                 }
               },
-              onRequestError() {
-                message.error('请求失败')
-              },
 
               onResponseError(ctx) {
                 if (ctx.response.status === 401) {

@@ -6,10 +6,8 @@ const props = withDefaults(defineProps<{
 }>(), {
   hover: false,
 })
-const isDark = defineModel({
-  type: Boolean,
-  default: false,
-})
+
+const { isDark } = useTheme()
 
 const buttonRef = shallowRef<HTMLButtonElement>()
 const isElementHover = useElementHover(buttonRef)

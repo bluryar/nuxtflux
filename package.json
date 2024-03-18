@@ -51,6 +51,7 @@
     "@unocss/eslint-config": "^0.58.5",
     "@unocss/nuxt": "^0.58.5",
     "@unocss/postcss": "^0.58.5",
+    "@vite-pwa/nuxt": "^0.6.0",
     "arco-design-nuxt-module": "^0.1.0",
     "commitizen": "^4.3.0",
     "cz-git": "^1.9.0",

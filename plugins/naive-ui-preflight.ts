@@ -5,6 +5,7 @@ export default defineNuxtPlugin({
     app.hook('app:mounted', () => {
       const meta = document.createElement('meta')
       meta.name = 'naive-ui-style'
+      meta.id = 'naive-ui-style'
       document.head.appendChild(meta)
     })
   },

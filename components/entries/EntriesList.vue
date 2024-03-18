@@ -6,8 +6,10 @@ import { useProvideLoadMore } from './stores/useEntriesLoadMore'
 import EntriesListToggleRadioGroup from './EntriesListToggleRadioGroup.vue'
 import EntriesMarkAllReadButton from './EntriesMarkAllReadButton.vue'
 import EntriesListSearchForm from './EntriesListSearchForm.vue'
+import { useViewingEntries } from './stores/useViewingEntries'
 
 const entriesInjection = useInjectApiAdapter()
+const { setViewingEntries } = useViewingEntries()
 
 const scrollbarRef = shallowRef<HTMLElement>()
 
@@ -26,7 +28,7 @@ const {
 })
 
 watch(entries, (list) => {
-  entriesInjection.setViewingEntries(list)
+  setViewingEntries(list)
 })
 
 const isMounted = useMounted()
