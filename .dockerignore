@@ -1,0 +1,9 @@
+node_modules
+.nuxt
+dist
+.build
+.dockerignore
+Dockerfile
+.git
+.gitignore
+README.md

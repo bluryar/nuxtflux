@@ -1,0 +1,73 @@
+services:
+  nuxtflux:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - '3000:3000' # Change this if you want
+    environment:
+      - VITE_TITLE=NuxtFlux
+    depends_on:
+      - miniflux
+
+  miniflux:
+    image: miniflux/miniflux:latest
+    restart: unless-stopped
+    ports:
+      - '8080:8080' # Change this if you want
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgres://miniflux:secret@db/miniflux?sslmode=disable
+      - RUN_MIGRATIONS=1
+      - CREATE_ADMIN=1
+      - ADMIN_USERNAME=admin # Change this
+      - ADMIN_PASSWORD=password # Change this
+
+  db:
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=miniflux
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=miniflux
+    volumes:
+      - ./miniflux-db:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD, pg_isready, -U, miniflux]
+      interval: 10s
+      start_period: 30s
+
+    # Uncomment the following to enable rsshub if you want host your own RSSHub
+    # rsshub:
+    #     # two ways to enable puppeteer:
+    #     # * comment out marked lines, then use this image instead: diygod/rsshub:chromium-bundled
+    #     # * (consumes more disk space and memory) leave everything unchanged
+    #     image: diygod/rsshub
+    #     restart: always
+    #     ports:
+    #         - '1200:1200'
+    #     environment:
+    #         NODE_ENV: production
+    #         CACHE_TYPE: redis
+    #         REDIS_URL: 'redis://redis:6379/'
+    #         PUPPETEER_WS_ENDPOINT: 'ws://browserless:3000'  # marked
+    #         # PROXY_URI: 'socks5h://warp-socks:9091'
+    #     depends_on:
+    #         - redis
+    #         - browserless  # marked
+    # browserless:  # marked
+    #     image: browserless/chrome  # marked
+    #     restart: always  # marked
+    #     ulimits:  # marked
+    #       core:  # marked
+    #         hard: 0  # marked
+    #         soft: 0  # marked
+
+    # redis:
+    #     image: redis:alpine
+    #     restart: always
+    #     volumes:
+    #         - ./redis-data:/data

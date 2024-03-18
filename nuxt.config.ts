@@ -6,6 +6,10 @@ const { resolve } = createResolver(import.meta.url)
 export default defineNuxtConfig({
   ssr: false,
 
+  nitro: {
+    compressPublicAssets: true,
+  },
+
   devServer: {
     // expose the server to the network, so I can access it from tailscale's client
     host: '0.0.0.0',
