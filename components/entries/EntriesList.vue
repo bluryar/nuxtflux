@@ -64,11 +64,17 @@ const { right, bottom } = useElementBounding(containerRef)
 const router = useRouter()
 const { arrowLeft, arrowRight } = useSharedMagicKeys()
 
+// TODO MOVE TO SHARED COMPOSABLES
 whenever(arrowLeft, () => updateViewingEntryByKey(-1))
 whenever(arrowRight, () => updateViewingEntryByKey(1))
 async function updateViewingEntryByKey(offset: 1 | -1) {
-  if (!viewingEntry.value)
+  if (!entries.value?.length)
     return
+
+  if (!viewingEntry.value) {
+    await setEntry(entries.value[0])
+    return
+  }
 
   const currentIdx = entries.value.findIndex(i => i.id === viewingEntry.value?.id)
 

@@ -1,4 +1,4 @@
-import { createSharedComposable } from '@vueuse/core'
+import { createSharedComposable, useTimeoutPoll } from '@vueuse/core'
 import { type MenuOption as NMenuOption, NSkeleton } from 'naive-ui'
 import type { MenuDividerOption } from 'naive-ui/lib'
 import type { TypedRouteLocationRaw } from '@typed-router'
@@ -161,9 +161,12 @@ export const useSharedMenusData = createSharedComposable(() => {
   const categoriesStore = useCategoriesStore()
   const feedsStore = useFeedsStore()
   const { executeCategories } = categoriesStore
-  const { executeAll } = feedsStore
+  const { executeFeeds, executeCounters } = feedsStore
   const { encodeKey, decodeKey, activeKey } = useActiveKey()
   const menuWrapperRef = ref<HTMLDivElement>()
+
+  const { pause, resume } = useTimeoutPoll(executeCounters, 1000 * 60)
+  pause()
 
   const {
     menus,
@@ -178,7 +181,7 @@ export const useSharedMenusData = createSharedComposable(() => {
     try {
       await Promise.all([
         executeCategories(),
-        executeAll(),
+        executeFeeds(),
         nextTick(),
       ])
     }
@@ -191,6 +194,8 @@ export const useSharedMenusData = createSharedComposable(() => {
     updateMenus()
 
     loaded = true
+
+    resume()
   }
 
   // 根据路由变化更新菜单 - feeds by active category

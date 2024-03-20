@@ -21,6 +21,7 @@ export const useFeedsStore = defineStore('feed', () => {
   } = useLazyMinifluxFetch('/v1/feeds/counters', {
     watch: false,
     immediate: false,
+    keepalive: true,
   })
   const {
     data: feedsPartial,
