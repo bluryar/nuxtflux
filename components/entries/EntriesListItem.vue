@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computedEager } from '@vueuse/core'
 import { useViewingEntries } from './stores/useViewingEntries'
+import EntryNavTagList from './EntryNavTagList.vue'
 import type { IEntry } from '~/models/Entry'
 import FluentMdl2ImagePixel from '~/assets/FluentMdl2ImagePixel.svg?url'
 import FluentMdl2ImagePixelDark from '~/assets/FluentMdl2ImagePixelDark.svg?url'
@@ -82,19 +83,7 @@ const el = shallowRef<HTMLElement | null>(null)
       <NSkeleton v-if="loading" style="width: 5em" />
 
       <div v-else prose>
-        <div flex="~ items-center gap1" w="full" overflow="hidden" my="1">
-          <NTag v-if="entry?.feed?.category?.title" class="max-w-40%" size="small" type="primary" @click.stop="$router.push({ name: 'mode-id-entryID', params: { mode: 'categories', id: entry.feed.category.id } })">
-            <div class="tag-text">
-              {{ entry?.feed?.category?.title }}
-            </div>
-          </NTag>
-          <span v-if="entry?.feed?.title && entry.feed.category?.title" class="text-xs text-gray">/</span>
-          <NTag v-if="entry?.feed?.title" class="max-w-55%" size="small" type="primary" @click.stop="$router.push({ name: 'mode-id-entryID', params: { mode: 'feeds', id: entry.feed.id } })">
-            <div class="tag-text">
-              {{ entry?.feed?.title }}
-            </div>
-          </NTag>
-        </div>
+        <EntryNavTagList :entry="entry" type="primary" class="w-full" />
         <h4 my="2">
           {{ entry?.title || $t('entry.title.empty') }}
         </h4>
@@ -118,30 +107,3 @@ const el = shallowRef<HTMLElement | null>(null)
     </NCard>
   </div>
 </template>
-
-<!-- <style scoped>
-.is-favorite::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 40px; /* 控制梯形的底边宽度 */
-  height: 40px; /* 控制梯形的高度 */
-  background-color: var(--primary-color);
-  opacity: 0.8;
-  @apply shadow-lg;
-  clip-path: polygon(0 0, 40% 0, 100% 60%, 100% 100%);
-}
-</style> -->
-
-<style scoped>
-:deep() {
-  .n-tag__content {
-    width: 100%;
-  }
-}
-
-.tag-text {
-  @apply w-full truncate py1 hover:(underline underline-wavy);
-}
-</style>
