@@ -61,7 +61,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install
       - name: Generate Pages
-        run: NUXT_APP_BASE_URL=${{ env.BASE_URL }} VITE_TITLE=${{ vars.VITE_TITLE }} npx nuxt build --preset github_pages
+        run: NUXT_APP_BASE_URL=${{ env.BASE_URL }} VITE_TITLE=$VITE_TITLE npx nuxt build --preset github_pages
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
