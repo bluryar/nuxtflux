@@ -5,7 +5,7 @@ import type { TypedRouteLocationRaw } from '@typed-router'
 import MenuLink from '../MenuLink.vue'
 import { NuxtLink } from '#components'
 import type { ICategory } from '~/models/Category'
-import type { IFeed } from '~/models/Feed'
+import type { Feed, IFeed } from '~/models/Feed'
 
 type MenuOption = NMenuOption & {
   $label?: string
@@ -29,6 +29,9 @@ export const useSharedMenusData = createSharedComposable(() => {
   } satisfies TypedRouteLocationRaw
   const CATEGORIES_IDX = 2
   const FEEDS_IDX = 3
+  const route = useRoute()
+
+  const activeKey = computed<string>(() => encodeKey(route))
 
   const allExtra = () => <span>{Object.values(counters.value?.unreads || {}).reduce((acc, val) => acc + val, 0) || ''}</span>
   const feedExtra = (id: number | string) => {
@@ -54,7 +57,7 @@ export const useSharedMenusData = createSharedComposable(() => {
       ),
       $label: t('menu.index'),
       icon: () => <div class="i-lucide:newspaper"></div>,
-      key: getKey(HOME_ROUTE),
+      key: encodeKey(HOME_ROUTE),
       extra: allExtra,
     } satisfies MenuOption,
     {
@@ -87,10 +90,38 @@ export const useSharedMenusData = createSharedComposable(() => {
     } satisfies MenuOption,
   ])
 
-  function getKey(route: TypedRouteLocationRaw) {
+  function encodeKey(route: TypedRouteLocationRaw) {
     const { fullPath, name } = router.resolve(route)
     const [, mode, id] = fullPath.match(ENTRY_ROUTE_KEY_REG) || []
-    return `${name}-${mode}-${id}`
+    return `${name}@${mode}@${id}`
+  }
+  const decodeKey = (key: string) => {
+    const [name = '', mode = '', id = ''] = key.split('@')
+    return { name, mode, id }
+  }
+
+  function getActiveFeedOfCategory(_feeds: Feed[] | null) {
+    const { mode, id } = decodeKey(activeKey.value || '')
+
+    let res = (feeds.value)
+    if (mode === 'categories') {
+      const target = categories.value?.find(item => String(item.id) === String(id))
+      if (target)
+        res = _feeds?.filter(feed => feed.category.id === target.id) || feeds.value || []
+    }
+
+    return res
+  }
+
+  watch(activeKey, updateMenus)
+
+  function updateMenus() {
+    const categoriesMenus = (toValue(categories) || []).map(transformFactory('categories'))
+
+    const feedsMenus = getActiveFeedOfCategory(toValue(feeds)).map(transformFactory('feeds'))
+
+    menus[CATEGORIES_IDX].children = categoriesMenus
+    menus[FEEDS_IDX].children = feedsMenus
   }
 
   function transformFactory(mode: 'categories' | 'feeds') {
@@ -101,7 +132,7 @@ export const useSharedMenusData = createSharedComposable(() => {
       } satisfies TypedRouteLocationRaw
 
       return {
-        key: getKey(route),
+        key: encodeKey(route),
         $label: title,
         label: () => (<MenuLink to={route} title={title} />),
         extra: mode === 'feeds'
@@ -129,25 +160,15 @@ export const useSharedMenusData = createSharedComposable(() => {
       return
     }
 
-    const categoriesMenus = (toValue(categories) || []).map(transformFactory('categories'))
-    const feedsMenus = (toValue(feeds) || []).map(transformFactory('feeds'))
+    updateMenus()
 
-    menus[CATEGORIES_IDX].children = categoriesMenus
-    menus[FEEDS_IDX].children = feedsMenus
     loaded = true
   }
-
-  const route = useRoute()
-
-  const activeKey = ref<string>()
-  watchEffect(() => {
-    activeKey.value = getKey(route)
-  })
 
   return {
     menus,
     init,
-    getKey,
+    encodeKey,
     activeKey,
   }
 })

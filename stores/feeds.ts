@@ -69,7 +69,7 @@ export const useFeedsStore = defineStore('feed', () => {
 
   return {
     data,
-    feeds,
+    feeds: feeds as Ref<Feed[]>,
     counters,
     feedsPartial,
 

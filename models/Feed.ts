@@ -35,8 +35,6 @@ export class Feed implements IFeed {
   hide_globally: boolean
   apprise_service_urls: string
 
-  private $unread_count: number = 0
-
   constructor(data: IFeed) {
     this.id ||= data.id
     this.user_id ||= data.user_id
@@ -68,13 +66,5 @@ export class Feed implements IFeed {
     this.allow_self_signed_certificates ||= data.allow_self_signed_certificates
     this.hide_globally ||= data.hide_globally
     this.apprise_service_urls ||= data.apprise_service_urls
-  }
-
-  setUnreadCount(count: number) {
-    this.$unread_count = count
-  }
-
-  getUnreadCount() {
-    return this.$unread_count
   }
 }

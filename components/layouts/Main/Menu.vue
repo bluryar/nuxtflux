@@ -12,7 +12,7 @@ const { isMenuCollapsed, asidePaddingLeft, asideCollapsedWidth } = useInjectLayo
 const {
   init,
   menus,
-  getKey,
+  encodeKey: getKey,
 } = useSharedMenusData()
 
 onMounted(() => {
