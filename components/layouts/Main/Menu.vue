@@ -13,6 +13,7 @@ const {
   init,
   menus,
   encodeKey: getKey,
+  menuWrapperRef,
 } = useSharedMenusData()
 
 onMounted(() => {
@@ -21,7 +22,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div v-bind="$attrs">
+  <div v-bind="$attrs" ref="menuWrapperRef">
     <NMenu
       :value="getKey($route)"
       class="menu font-sans"

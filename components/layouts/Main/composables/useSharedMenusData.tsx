@@ -163,6 +163,7 @@ export const useSharedMenusData = createSharedComposable(() => {
   const { executeCategories } = categoriesStore
   const { executeAll } = feedsStore
   const { encodeKey, decodeKey, activeKey } = useActiveKey()
+  const menuWrapperRef = ref<HTMLDivElement>()
 
   const {
     menus,
@@ -200,6 +201,7 @@ export const useSharedMenusData = createSharedComposable(() => {
     // 初始化交由外部触发
     init,
     encodeKey,
+    menuWrapperRef,
     activeKey,
   }
 })

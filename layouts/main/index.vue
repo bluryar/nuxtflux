@@ -68,14 +68,6 @@ setupAsideResponsive()
   </div>
 </template>
 
-<style>
-body {
-  overflow: hidden;
-  width: 100vw;
-  height: 100vh;
-}
-</style>
-
 <style scoped>
 .layout {
   /* size */
@@ -92,6 +84,7 @@ body {
 .layout {
   width: 100vw;
   height: 100vh;
+  overflow: hidden;
 
   .header {
     position: fixed;
