@@ -80,7 +80,7 @@ function openExternal(url?: string) {
 </script>
 
 <template>
-  <div class="px-6 pb-6 uno-scrollbar uno-scrollbar-rounded">
+  <div class="px-6 pb-6">
     <NEmpty v-if="!entry" size="large" class="h-full flex items-center justify-center">
       <template #icon>
         <div class="i-fluent-mdl2:page" />

@@ -121,7 +121,7 @@ function useInitMenu({
         res = _feeds?.filter(feed => feed.category.id === target.id) || feeds.value || []
     }
 
-    return res
+    return res || []
   }
 
   function updateMenus() {

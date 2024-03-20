@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useElementBounding, useInfiniteScroll, useMounted } from '@vueuse/core'
+import { useElementBounding, useInfiniteScroll, useMounted, useTemplateRefsList, whenever } from '@vueuse/core'
 import { useInjectApiAdapter } from './stores/useApiAdapter'
 import EntriesListItem from './EntriesListItem.vue'
 import { useProvideLoadMore } from './stores/useEntriesLoadMore'
@@ -7,11 +7,14 @@ import EntriesListToggleRadioGroup from './EntriesListToggleRadioGroup.vue'
 import EntriesMarkAllReadButton from './EntriesMarkAllReadButton.vue'
 import EntriesListSearchForm from './EntriesListSearchForm.vue'
 import { useViewingEntries } from './stores/useViewingEntries'
+import type { IEntry } from '~/models/Entry'
+import { useSharedMagicKeys } from '~/composables/vueuse'
 
 const entriesInjection = useInjectApiAdapter()
-const { setViewingEntries } = useViewingEntries()
+const { setViewingEntries, setViewingEntry, viewingEntry } = useViewingEntries()
 
 const scrollbarRef = shallowRef<HTMLElement>()
+const refs = useTemplateRefsList<HTMLDivElement>()
 
 const {
   list: entries,
@@ -19,6 +22,7 @@ const {
   loadMore,
   noMore,
   init,
+  total,
 } = useProvideLoadMore({
   data: entriesInjection.entries,
   pending: entriesInjection.loading,
@@ -56,6 +60,62 @@ useInfiniteScroll(scrollbarRef, () => {
 
 const containerRef = shallowRef<HTMLDivElement>()
 const { right, bottom } = useElementBounding(containerRef)
+
+const router = useRouter()
+const { arrowLeft, arrowRight } = useSharedMagicKeys()
+
+whenever(arrowLeft, () => updateViewingEntryByKey(-1))
+whenever(arrowRight, () => updateViewingEntryByKey(1))
+async function updateViewingEntryByKey(offset: 1 | -1) {
+  if (!viewingEntry.value)
+    return
+
+  const currentIdx = entries.value.findIndex(i => i.id === viewingEntry.value?.id)
+
+  const newIdx = currentIdx + offset
+  if (currentIdx < 0 || newIdx < 0 || newIdx - 1 > total.value)
+    return
+
+  const target = entries.value[newIdx]
+  if (!target)
+    await loadMore()
+    // await nextTick()
+
+  setEntry(target)
+}
+
+async function focusToEntryItem(entry: IEntry) {
+  await nextTick()
+  if (!viewingEntry.value || !scrollbarRef.value)
+    return
+
+  const currentIdx = entries.value.findIndex(i => i.id === entry?.id)
+  const targetDOM = refs.value[currentIdx]
+  if (!targetDOM)
+    return
+  targetDOM.scrollIntoView({
+    block: 'start',
+  })
+}
+
+async function setEntry(entry?: IEntry | null) {
+  if (!entry) {
+    setViewingEntry(null)
+    return
+  }
+
+  setViewingEntry(entry)
+  await nextTick()
+  await focusToEntryItem(entry)
+
+  router.push({
+    name: 'mode-id-entryID',
+    params: {
+      ...(router.currentRoute.value.params as { mode: string, id: string }),
+      entryID: entry?.id,
+    },
+  })
+}
 </script>
 
 <template>
@@ -79,12 +139,18 @@ const { right, bottom } = useElementBounding(containerRef)
       />
     </div>
     <div v-else ref="scrollbarRef" class="list">
-      <EntriesListItem
+      <div
         v-for="entry, idx in entries"
         :key="`entries-item#${entry.id}#${idx}`"
-        :entry="entry"
-        :loading="loadingMore"
-      />
+        :ref="refs.set"
+      >
+        <EntriesListItem
+
+          :entry="entry"
+          :loading="loadingMore"
+          @click="(entry) => setEntry(entry)"
+        />
+      </div>
 
       <div class="h-full w-full flex items-center justify-center prose">
         <div v-if="noMore">
@@ -106,7 +172,7 @@ const { right, bottom } = useElementBounding(containerRef)
 
 <style scoped>
 .list {
-  @apply h-full w-full flex flex-col gap-2.25 pb-4 uno-scrollbar uno-scrollbar-rounded px-3;
+  @apply h-full w-full flex flex-col gap-2.25 pb-4 uno-scrollbar uno-scrollbar-rounded px-3 relative;
 }
 
 .input-area,

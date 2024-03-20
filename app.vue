@@ -4,10 +4,6 @@ import 'animate.css'
 import 'vfonts/FiraCode.css'
 import 'vfonts/FiraSans.css'
 
-definePageMeta({
-  title: import.meta.env.VITE_TITLE,
-})
-
 const { load, theme, themeOverrides, locale, dateLocale } = useTheme()
 onMounted(() => {
   load()

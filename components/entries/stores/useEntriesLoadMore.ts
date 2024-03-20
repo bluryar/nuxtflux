@@ -87,6 +87,7 @@ const [useProvideLoadMore, _useInjectLoadMore] = createInjectionState((options: 
     noMore,
     loadMore,
     init,
+    total,
 
     // rewrite query reference
     query: editingQuery,

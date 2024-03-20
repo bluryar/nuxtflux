@@ -15,10 +15,10 @@ definePageMeta({
   layout: 'main',
   middleware: ['auth'],
 
-  key(route) {
-    const obj = route.params as { mode: string, id: string, entry: string }
-    return `entries-${obj.mode}-${obj.id}-${obj.entry}`
-  },
+  // key(route) {
+  //   const obj = route.params as { mode: string, id: string, entry: string }
+  //   return `entries-${obj.mode}-${obj.id}-${obj.entry}`
+  // },
 })
 
 const resolvedData = shallowRef<Entry | null>(null)
@@ -74,7 +74,5 @@ watch(entryID, async (val) => {
 </script>
 
 <template>
-  <div class="h-full w-full">
-    <EntriesContent :entry="resolvedData" class="h-full w-full" />
-  </div>
+  <EntriesContent :entry="resolvedData" class="h-full w-full" />
 </template>
