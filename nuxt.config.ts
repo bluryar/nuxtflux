@@ -8,12 +8,12 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: import.meta.env.VITE_TITLE,
+      title: import.meta.env.VITE_TITLE || 'NuxtFlux',
       link: [
         {
           rel: 'icon',
           type: 'image/x-icon',
-          href: `${import.meta.env.NUXT_APP_BASE_URL || ''}/favicon.ico`,
+          href: `${import.meta.env.NUXT_APP_BASE_URL || ''}/favicon.ico`.replaceAll('//', '/'),
         },
       ],
     },
