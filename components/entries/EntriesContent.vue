@@ -94,7 +94,7 @@ function openExternal(url?: string) {
           {{ entry.title || $t('entry.title.empty') }}
         </a>
       </h2>
-      <div v-if="viewingEntry" class="flex">
+      <div v-if="viewingEntry" class="w-full flex flex-wrap gap-y-2">
         <AuthorButton class="btn" :entry="viewingEntry" />
         <StarButton class="btn" :entry="viewingEntry" responsive @update-entry="onUpdateEntryStarred" />
         <PullContentButton class="btn" :entry="viewingEntry" responsive @fetch-content="(val) => (fetchedContent = val || '')" />

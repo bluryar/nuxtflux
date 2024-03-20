@@ -33,7 +33,7 @@ const loading = computed(() => status.value === 'pending')
 
 <template>
   <div class="flex items-center gap1 pr-2" :title="$t('zhua_qu_quan_wen')" :disabled="loading" @click="() => !loading && execute().then(() => emits('fetch-content', data?.content))">
-    <div class="lt-sm:hidden">
+    <div>
       {{ $t('zhua_qu_quan_wen') }}
     </div>
     <div v-if="!loading" class="i-lucide:download" inline-block />

@@ -28,7 +28,7 @@ const {
 
   logoSize: '24px',
   asidePaddingLeft: '32px',
-  asideCollapsedPaddingLeft: '16px',
+  asideCollapsedPaddingLeft: '20px',
   asidePaddingRight: '16px',
   asideCollapsedPaddingRight: '0px',
   asideHoverDelay: 150,

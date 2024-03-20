@@ -33,7 +33,7 @@ const loading = computed(() => status.value === 'pending')
 
 <template>
   <div class="flex items-center gap1 pr2" :disabled="loading" @click="() => !loading && execute().then(() => { $emit('updateEntry', !entry.starred) })">
-    <div class="lt-sm:hidden">
+    <div>
       {{ entry.starred ? '取消收藏' : '收藏' }}
     </div>
     <div
