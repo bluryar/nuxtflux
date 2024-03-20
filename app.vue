@@ -13,6 +13,12 @@ onMounted(() => {
   load()
 })
 
+useSeoMeta({
+  title: import.meta.env.VITE_TITLE,
+})
+
+useServerHead({ title: import.meta.env.VITE_TITLE })
+
 useHead({
   link: [
     {

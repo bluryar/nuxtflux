@@ -6,6 +6,19 @@ const { resolve } = createResolver(import.meta.url)
 export default defineNuxtConfig({
   ssr: false,
 
+  app: {
+    head: {
+      title: import.meta.env.VITE_TITLE,
+      link: [
+        {
+          rel: 'icon',
+          type: 'image/x-icon',
+          href: '/favicon.ico',
+        },
+      ],
+    },
+  },
+
   nitro: {
     compressPublicAssets: true,
   },
