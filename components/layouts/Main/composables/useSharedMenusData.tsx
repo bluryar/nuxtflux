@@ -11,27 +11,48 @@ type MenuOption = NMenuOption & {
   $label?: string
 }
 
-export const useSharedMenusData = createSharedComposable(() => {
-  const { t } = useI18n()
+const KEY_SPLITTER = '   @   '
+
+const ENTRY_ROUTE_KEY_REG = /^\/(all|categories|feeds)\/(\d+)/
+
+const HOME_ROUTE = {
+  name: 'mode-id-entryID',
+  params: { mode: 'all', id: 'all' },
+} satisfies TypedRouteLocationRaw
+const CATEGORIES_IDX = 2
+const FEEDS_IDX = 3
+
+function useActiveKey() {
+  const router = useRouter()
+  const route = useRoute()
+  function encodeKey(route: TypedRouteLocationRaw) {
+    const { fullPath, name } = router.resolve(route)
+    const [, mode, id] = fullPath.match(ENTRY_ROUTE_KEY_REG) || []
+    return [name, mode, id].join(KEY_SPLITTER)
+  }
+  const decodeKey = (key: string) => {
+    const [name = '', mode = '', id = ''] = key.split(KEY_SPLITTER)
+    return { name, mode, id }
+  }
+  const activeKey = computed<string>(() => encodeKey(route))
+  return {
+    encodeKey,
+    decodeKey,
+    activeKey,
+  }
+}
+
+function useInitMenu({
+  activeKey,
+  decodeKey,
+  encodeKey,
+}: ReturnType<typeof useActiveKey>) {
   const categoriesStore = useCategoriesStore()
   const feedsStore = useFeedsStore()
-  const { executeCategories } = categoriesStore
-  const { executeAll } = feedsStore
+
   const { categories } = storeToRefs(categoriesStore)
   const { feeds, counters } = storeToRefs(feedsStore)
-
-  const router = useRouter()
-  const ENTRY_ROUTE_KEY_REG = /^\/(all|categories|feeds)\/(\d+)/
-
-  const HOME_ROUTE = {
-    name: 'mode-id-entryID',
-    params: { mode: 'all', id: 'all' },
-  } satisfies TypedRouteLocationRaw
-  const CATEGORIES_IDX = 2
-  const FEEDS_IDX = 3
-  const route = useRoute()
-
-  const activeKey = computed<string>(() => encodeKey(route))
+  const { t } = useI18n()
 
   const allExtra = () => <span>{Object.values(counters.value?.unreads || {}).reduce((acc, val) => acc + val, 0) || ''}</span>
   const feedExtra = (id: number | string) => {
@@ -90,17 +111,7 @@ export const useSharedMenusData = createSharedComposable(() => {
     } satisfies MenuOption,
   ])
 
-  function encodeKey(route: TypedRouteLocationRaw) {
-    const { fullPath, name } = router.resolve(route)
-    const [, mode, id] = fullPath.match(ENTRY_ROUTE_KEY_REG) || []
-    return `${name}@${mode}@${id}`
-  }
-  const decodeKey = (key: string) => {
-    const [name = '', mode = '', id = ''] = key.split('@')
-    return { name, mode, id }
-  }
-
-  function getActiveFeedOfCategory(_feeds: Feed[] | null) {
+  function _filterFeedsByActiveCategory(_feeds: Feed[] | null) {
     const { mode, id } = decodeKey(activeKey.value || '')
 
     let res = (feeds.value)
@@ -113,12 +124,10 @@ export const useSharedMenusData = createSharedComposable(() => {
     return res
   }
 
-  watch(activeKey, updateMenus)
-
   function updateMenus() {
     const categoriesMenus = (toValue(categories) || []).map(transformFactory('categories'))
 
-    const feedsMenus = getActiveFeedOfCategory(toValue(feeds)).map(transformFactory('feeds'))
+    const feedsMenus = _filterFeedsByActiveCategory(toValue(feeds)).map(transformFactory('feeds'))
 
     menus[CATEGORIES_IDX].children = categoriesMenus
     menus[FEEDS_IDX].children = feedsMenus
@@ -141,6 +150,24 @@ export const useSharedMenusData = createSharedComposable(() => {
       } satisfies MenuOption
     }
   }
+
+  return {
+    menus,
+    updateMenus,
+  }
+}
+
+export const useSharedMenusData = createSharedComposable(() => {
+  const categoriesStore = useCategoriesStore()
+  const feedsStore = useFeedsStore()
+  const { executeCategories } = categoriesStore
+  const { executeAll } = feedsStore
+  const { encodeKey, decodeKey, activeKey } = useActiveKey()
+
+  const {
+    menus,
+    updateMenus,
+  } = useInitMenu({ activeKey, decodeKey, encodeKey })
 
   let loaded = false
   const init = async () => {
@@ -165,8 +192,12 @@ export const useSharedMenusData = createSharedComposable(() => {
     loaded = true
   }
 
+  // 根据路由变化更新菜单 - feeds by active category
+  watch(activeKey, updateMenus)
+
   return {
     menus,
+    // 初始化交由外部触发
     init,
     encodeKey,
     activeKey,

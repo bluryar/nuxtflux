@@ -14,6 +14,13 @@ onMounted(() => {
 })
 
 useHead({
+  link: [
+    {
+      rel: 'icon',
+      type: 'image/x-icon',
+      href: '/favicon.ico',
+    },
+  ],
   title: import.meta.env.VITE_TITLE,
 })
 </script>
