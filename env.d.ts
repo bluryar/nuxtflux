@@ -6,6 +6,7 @@ declare namespace NodeJS {
 
 interface ImportMetaEnv {
   readonly VITE_TITLE: string
+  readonly NUXT_APP_BASE_URL: string
 }
 
 declare module '@arco-design/color' {

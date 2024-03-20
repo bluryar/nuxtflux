@@ -8,23 +8,6 @@ const { load, theme, themeOverrides, locale, dateLocale } = useTheme()
 onMounted(() => {
   load()
 })
-
-useSeoMeta({
-  title: import.meta.env.VITE_TITLE,
-})
-
-useServerHead({ title: import.meta.env.VITE_TITLE })
-
-useHead({
-  link: [
-    {
-      rel: 'icon',
-      type: 'image/x-icon',
-      href: '/favicon.ico',
-    },
-  ],
-  title: import.meta.env.VITE_TITLE,
-})
 </script>
 
 <template>
