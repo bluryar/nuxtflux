@@ -41,10 +41,10 @@ onMounted(() => {
 .menu {
   :deep() {
     .n-menu-item-content-header {
-      @apply relative pr-12px;
+      @apply pr-12px;
     }
     .n-menu-item-content-header__extra {
-      @apply absolute top-0 right-0;
+      @apply absolute top-50% translate-y--50% right-0 mr3;
     }
   }
 }

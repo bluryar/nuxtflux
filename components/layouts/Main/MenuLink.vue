@@ -18,17 +18,13 @@ const isOverflow = computed(
     return isTextOverflow(dom, false)
   },
 )
-
-const aTagRef = templateRef<HTMLElement>('aTagRef')
 </script>
 
 <template>
   <NTooltip :show="isHover && isOverflow" class="pointer-events-none">
     <template #trigger>
       <NuxtLink :to="to">
-        <a ref="aTagRef">
-          {{ title }}
-        </a>
+        {{ title }}
       </NuxtLink>
     </template>
 
