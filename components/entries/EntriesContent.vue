@@ -87,7 +87,7 @@ function openExternal(url?: string) {
       </template>
     </NEmpty>
     <!-- overflow-hidden: create A BFC, avoid children margin overflow -->
-    <div v-else class="relative mx-auto max-w-80ch overflow-hidden font-prose-serif prose">
+    <div v-else class="relative mx-auto max-w-92ch overflow-hidden font-prose-serif prose">
       <div class="absolute top-0 text-sm text-text3">
         {{ date }}
       </div>
