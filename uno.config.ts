@@ -91,7 +91,7 @@ export default defineConfig({
     presetTypography(),
     presetWebFonts({
       fonts: {
-        'prose-serif': ['Noto Serif Simplified Chinese', 'Noto Serif', 'Noto Serif Traditional Chinese', 'Noto Serif Hong Kong', 'Noto Serif'],
+        'prose-serif': ['Noto Serif SC', 'Source Han Serif SC', 'serif'],
       },
     }),
   ],

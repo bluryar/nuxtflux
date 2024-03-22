@@ -87,35 +87,38 @@ function openExternal(url?: string) {
       </template>
     </NEmpty>
     <!-- overflow-hidden: create A BFC, avoid children margin overflow -->
-    <div v-else class="relative mx-auto max-w-80ch overflow-hidden prose">
-      <div class="absolute top--1.5em text-sm">
+    <div v-else class="relative mx-auto max-w-80ch overflow-hidden font-prose-serif prose">
+      <div class="absolute top-0 text-sm text-text3">
         {{ date }}
       </div>
 
       <h1 class="title mb2 mt5" @click="openExternal(entry.url)">
-        <a no-underline>
+        <a no-underline class="font-bold">
           {{ entry.title || $t('entry.title.empty') }}
         </a>
       </h1>
 
-      <div v-if="viewingEntry" class="w-full flex flex-wrap items-center gap-y-2">
+      <div v-if="viewingEntry" class="w-full flex flex-wrap items-center gap-y-2 font-sans">
         <AuthorButton class="btn" :entry="viewingEntry" />
         <StarButton class="btn" :entry="viewingEntry" responsive @update-entry="onUpdateEntryStarred" />
         <PullContentButton class="btn" :entry="viewingEntry" responsive @fetch-content="(val) => (fetchedContent = val || '')" />
         <NDivider vertical />
         <EntryNavTagList :entry="entry" type="default" class="inline-flex" />
       </div>
+
       <div class="my-2 w-full origin-center scale-y-50 border-1px" />
+
       <blockquote v-if="fetchedContent && fetchedContent !== entry?.content" class="max-h-300px bg-card px-6 uno-scrollbar uno-scrollbar-rounded" v-html="fetchedContent" />
-      <div class="entry entry-article entry-article-content text-16px font-prose-serif">
-        <article class="text-1.1em color-text2" v-html="entry?.content || ''" />
+
+      <div id="entry-article" class="text-16px">
+        <article class="text-1.1em color-text2 font-500 tracking-.045em" v-html="entry?.content || ''" />
       </div>
     </div>
   </div>
 </template>
 
 <style>
-.entry.entry-article.entry-article-content {
+#entry-article {
   iframe {
     @apply w-full;
   }
@@ -125,7 +128,7 @@ function openExternal(url?: string) {
   }
 
   code {
-    @apply font-mono;
+    @apply font-mono text-14px tracking-0;
   }
 
   blockquote {
