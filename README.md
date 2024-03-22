@@ -2,7 +2,7 @@
 
 ## 介绍
 
-我是一名Vue开发者, 在开发这个项目前, 我的技术栈为 Vite + Vue3 + Pinia + UnoCSS + Typescript + NaiveUI + VueUse. 也就是说, 我是一个Vue3的忠实拥趸. 为了了解 Nuxt 3 这个框架, 我需要一个玩具项目来帮助我在编码实践中学习 Nuxt 3. 于是, 我决定开发一个玩具项目, 用来学习 Nuxt 3.
+我是一名Vue开发者, 在开发这个项目前, 我的技术栈为 Vite + Vue3 + Pinia + UnoCSS + Typescript + NaiveUI + VueUse. 也就是说, 我是一个Vue3的忠实拥趸. 为了了解 Nuxt 3 这个框架, 我需要一个玩具项目来帮助我在编码实践中学习 Nuxt 3.
 
 至于为什么选择做Miniflux的Web套壳: 某一天, 我在刷 X 的时候发现了 [ReactFlux](https://github.com/electh/ReactFlux) 作者的帖子, 刚好, 我在此之前刚刚给自己的 Homelab Server 部署了 Miniflux 和 RSSHub.
 
