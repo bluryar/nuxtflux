@@ -86,15 +86,15 @@ function openExternal(url?: string) {
         <div class="i-fluent-mdl2:page" />
       </template>
     </NEmpty>
-    <div v-else class="entry" relative mx-auto prose>
-      <div class="absolute top--2em">
+    <div v-else class="entry" relative mx-auto max-w-80ch prose>
+      <div class="absolute top--1.5em text-sm">
         {{ date }}
       </div>
-      <h2 class="title" @click="openExternal(entry.url)">
+      <h1 class="title mb2 mt5" @click="openExternal(entry.url)">
         <a no-underline>
           {{ entry.title || $t('entry.title.empty') }}
         </a>
-      </h2>
+      </h1>
       <div v-if="viewingEntry" class="w-full flex flex-wrap items-center gap-y-2">
         <AuthorButton class="btn" :entry="viewingEntry" />
         <StarButton class="btn" :entry="viewingEntry" responsive @update-entry="onUpdateEntryStarred" />
@@ -104,7 +104,9 @@ function openExternal(url?: string) {
       </div>
       <div class="my-2 w-full origin-center scale-y-50 border-1px" />
       <blockquote v-if="fetchedContent && fetchedContent !== entry?.content" class="max-h-300px bg-card px-6 uno-scrollbar uno-scrollbar-rounded" v-html="fetchedContent" />
-      <article class="entry entry-article entry-article-content" v-html="entry?.content || ''" />
+      <div class="entry entry-article entry-article-content py-1 text-16px font-prose-serif">
+        <article class="text-1.1em color-text2" v-html="entry?.content || ''" />
+      </div>
     </div>
   </div>
 </template>

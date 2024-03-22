@@ -7,6 +7,7 @@ import {
   presetIcons,
   presetTypography,
   presetUno,
+  presetWebFonts,
   transformerDirectives,
   transformerVariantGroup,
 } from 'unocss'
@@ -88,6 +89,11 @@ export default defineConfig({
       prefix: 'uno-',
     }),
     presetTypography(),
+    presetWebFonts({
+      fonts: {
+        'prose-serif': ['Noto Serif Simplified Chinese', 'Noto Serif', 'Noto Serif Traditional Chinese', 'Noto Serif Hong Kong', 'Noto Serif'],
+      },
+    }),
   ],
   transformers: [
     transformerDirectives(),
