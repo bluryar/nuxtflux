@@ -22,7 +22,7 @@
 
 - **i18n** - Nuxt 3 的i18n模块, 搭配 VSCode 的 [i18n Ally](https://github.com/lokalise/i18n-ally) 插件, 让我在编写多语言的时候, 有了很好的体验.
 
-- **Responsive** - 由于我在开发时, 我希望在手机上也可以使用这个网页, 所以我选择了 Responsive.
+- **Responsive** - 由于我在开发时, 我希望在手机上也可以使用这个网页.
 
 ## 使用方法
 
