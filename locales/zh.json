@@ -26,8 +26,10 @@
   "message.submit.success": "成功",
   "mi_ma": "密码",
   "mi_ma_bi_tian": "密码为必填项",
+  "qu_xiao_shou_cang": "取消收藏",
   "shi_yong_api_token_deng_lu": "使用API令牌登录",
   "shi_yong_zhang_hao_mi_ma_deng_lu": "使用账号和密码登录",
+  "shou_cang": "收藏",
   "timeAgo": {
     "ago": "{0}前",
     "day": "天",
