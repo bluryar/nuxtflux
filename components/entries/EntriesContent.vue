@@ -5,6 +5,7 @@ import PullContentButton from './PullContentButton.vue'
 import StarButton from './StarButton.vue'
 import { useViewingEntries } from './stores/useViewingEntries'
 import EntryNavTagList from './EntryNavTagList.vue'
+import SaveButton from './SaveButton.vue'
 import type { Entry } from '~/models/Entry'
 
 const props = withDefaults(
@@ -101,6 +102,7 @@ function openExternal(url?: string) {
       <div v-if="viewingEntry" class="w-full flex flex-wrap items-center gap-y-2 font-sans">
         <AuthorButton class="btn" :entry="viewingEntry" />
         <StarButton class="btn" :entry="viewingEntry" responsive @update-entry="onUpdateEntryStarred" />
+        <SaveButton class="btn" :entry="viewingEntry" />
         <PullContentButton class="btn" :entry="viewingEntry" responsive @fetch-content="(val) => (fetchedContent = val || '')" />
         <NDivider vertical />
         <EntryNavTagList :entry="entry" type="default" class="inline-flex" />
