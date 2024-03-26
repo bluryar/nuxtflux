@@ -31,30 +31,37 @@ function setEntry() {
   emits('click', props.entry)
 }
 
-const id = useId()
+const iconID = computed(() => String(props.entry?.feed?.icon.icon_id))
+
+const key = `entries-list-item-icon-${iconID.value}`
+
 const {
   data: icon,
-  execute: executeIcon,
-  // pending: isLoading,
-  status,
-} = useLazyMinifluxFetch('/v1/icons/{iconID}', {
-  method: 'GET',
-  path: {
-    iconID: computed(() => String(props.entry?.feed?.icon.icon_id || Number.NaN)) as Ref,
+  refresh: executeIcon,
+} = useMinifluxFetch(
+  '/v1/icons/{iconID}',
+  {
+    method: 'GET',
+    path: {
+      iconID,
+    },
+    key,
+    immediate: false,
   },
-  key: `icon-${id}`,
-  watch: false,
-  immediate: false,
-})
-const isLoading = computed(() => status.value === 'pending')
+)
 
-watch(() => props.entry?.feed_id, (entry) => {
-  if (typeof entry !== 'undefined')
+watch(() => props.entry?.feed_id, async (entry) => {
+  if (typeof entry !== 'undefined') {
+    // clearNuxtData(key)
     executeIcon()
-}, { immediate: true, deep: true })
+  }
+}, { immediate: true, flush: 'post' })
+
+const nuxt = useNuxtApp()
 
 const iconUrl = computed(() => {
-  const { data, mime_type } = icon.value || {}
+  const { data, mime_type } = icon.value || nuxt.payload.data[key] || {}
+
   if (data?.startsWith(mime_type || ''))
     return `data:${data}`
 
@@ -101,8 +108,8 @@ const iconUrl = computed(() => {
       </h4>
       <div class="font-sans op-90%">
         <div class="inline-flex items-center gap2 text-lg">
-          <div v-if="isLoading" class="i-svg-spinners:pulse-multiple" />
-          <img v-else :src="iconUrl" class="inline-block h-1em w-1em" lazy>
+          <!-- <div v-if="!isLoading" class="i-svg-spinners:pulse-multiple" /> -->
+          <img v-if="iconUrl" :src="iconUrl" class="inline-block h-1em w-1em" lazy>
           <span class="text-size-sm">{{ entry?.author || entry?.feed?.title || $t('entry.author.empty') }}</span>
         </div>
         <div class="flex items-center gap2">

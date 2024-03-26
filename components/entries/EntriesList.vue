@@ -146,8 +146,8 @@ async function setEntry(entry?: IEntry | null) {
     </div>
     <div v-else ref="scrollbarRef" class="list">
       <div
-        v-for="entry, idx in entries"
-        :key="`entries-item#${entry.id}#${idx}`"
+        v-for="entry in entries"
+        :key="`entries-item#${entry.id}`"
         :ref="refs.set"
       >
         <EntriesListItem
