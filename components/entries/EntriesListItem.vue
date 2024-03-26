@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computedEager } from '@vueuse/core'
+import { computedEager, useAsyncState } from '@vueuse/core'
 import { useViewingEntries } from './stores/useViewingEntries'
 import EntryNavTagList from './EntryNavTagList.vue'
 import type { IEntry } from '~/models/Entry'
@@ -30,6 +30,36 @@ const timeAgo = useLocaleTimeAgo(
 function setEntry() {
   emits('click', props.entry)
 }
+
+const id = useId()
+const {
+  data: icon,
+  execute: executeIcon,
+  // pending: isLoading,
+  status,
+} = useLazyMinifluxFetch('/v1/icons/{iconID}', {
+  method: 'GET',
+  path: {
+    iconID: computed(() => String(props.entry?.feed?.icon.icon_id || Number.NaN)) as Ref,
+  },
+  key: `icon-${id}`,
+  watch: false,
+  immediate: false,
+})
+const isLoading = computed(() => status.value === 'pending')
+
+watch(() => props.entry?.feed_id, (entry) => {
+  if (typeof entry !== 'undefined')
+    executeIcon()
+}, { immediate: true, deep: true })
+
+const iconUrl = computed(() => {
+  const { data, mime_type } = icon.value || {}
+  if (data?.startsWith(mime_type || ''))
+    return `data:${data}`
+
+  return data
+})
 </script>
 
 <template>
@@ -70,8 +100,10 @@ function setEntry() {
         {{ entry?.title || $t('entry.title.empty') }}
       </h4>
       <div class="font-sans op-90%">
-        <div>
-          <span>{{ entry?.author || entry?.feed?.title || $t('entry.author.empty') }}</span>
+        <div class="inline-flex items-center gap2 text-lg">
+          <div v-if="isLoading" class="i-svg-spinners:pulse-multiple" />
+          <img v-else :src="iconUrl" class="inline-block h-1em w-1em" lazy>
+          <span class="text-size-sm">{{ entry?.author || entry?.feed?.title || $t('entry.author.empty') }}</span>
         </div>
         <div class="flex items-center gap2">
           <div
