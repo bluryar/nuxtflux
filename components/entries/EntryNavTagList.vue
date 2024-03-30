@@ -1,16 +1,21 @@
 <script setup lang="ts">
 import type { TagProps } from 'naive-ui'
+import FeedChangeCategory from './FeedChangeCategory.vue'
 import type { IEntry } from '~/models/Entry'
 
-defineProps<{
+withDefaults(defineProps<{
   entry?: null | IEntry
   type: TagProps['type']
-}>()
+  showSelect?: boolean
+}>(), {
+  showSelect: false,
+})
 </script>
 
 <template>
   <div flex="~ items-center gap1" overflow="hidden" my="1">
-    <NTag v-if="entry?.feed?.category?.title" class="max-w-40%" size="small" :type="type" @click.stop="$router.push({ name: 'mode-id-entryID', params: { mode: 'categories', id: entry.feed.category.id } })">
+    <FeedChangeCategory v-if="showSelect" :entry="entry" />
+    <NTag v-if="entry?.feed?.category?.title && !showSelect" class="max-w-40%" size="small" :type="type" @click.stop="$router.push({ name: 'mode-id-entryID', params: { mode: 'categories', id: entry.feed.category.id } })">
       <div class="tag-text">
         {{ entry?.feed?.category?.title }}
       </div>

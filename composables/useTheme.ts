@@ -7,6 +7,7 @@ import { generate } from '@arco-design/color'
 
 export const useTheme = createSharedComposable(
   () => {
+    // TODO MAKE IT DYNAMIC
     const dark = generate('rgb(255, 112, 13)', { dark: true, list: true })
     const light = generate('rgb(234, 88, 12)', { list: true })
 

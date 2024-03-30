@@ -9,6 +9,7 @@ export const useCategoriesStore = defineStore('category', () => {
     pending: pendingCategories,
   } = useLazyMinifluxFetch('/v1/categories', {
     immediate: false,
+    default: () => [],
     transform: (data: ICategory[]) => data.map(i => (new Category(i))),
   })
 

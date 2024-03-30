@@ -6,7 +6,7 @@
 
 至于为什么选择做Miniflux的Web套壳: 某一天, 我在刷 X 的时候发现了 [ReactFlux](https://github.com/electh/ReactFlux) 作者的帖子, 刚好, 我在此之前刚刚给自己的 Homelab Server 部署了 Miniflux 和 RSSHub.
 
-## Feature
+## Features
 
 - **Typescript** - 我习惯了 VSCode 的 Intellisense, 所以我选择了 Typescript. 尽管在开发时, 由于 Volar 正在切换大版本, 导致在编写 SFC 时编辑器会有一些小问题.
 

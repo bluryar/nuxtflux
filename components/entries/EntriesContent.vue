@@ -188,7 +188,7 @@ function onContentMounted(vNode: VNode) {
         <SaveButton class="btn" :entry="viewingEntry" />
         <PullContentButton class="btn" :entry="viewingEntry" responsive @fetch-content="(val) => (fetchedContent = val || '')" />
         <NDivider vertical />
-        <EntryNavTagList :entry="entry" type="default" class="inline-flex" />
+        <EntryNavTagList show-select :entry="entry" type="default" class="inline-flex" />
       </div>
 
       <div class="my-2 w-full origin-center scale-y-50 border-1px" />

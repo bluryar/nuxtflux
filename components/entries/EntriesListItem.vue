@@ -34,6 +34,7 @@ function setEntry() {
 const iconID = computed(() => String(props.entry?.feed?.icon.icon_id))
 
 const key = `entries-list-item-icon-${iconID.value}`
+const nuxt = useNuxtApp()
 
 const {
   data: icon,
@@ -47,6 +48,9 @@ const {
     },
     key,
     immediate: false,
+    getCachedData(key) {
+      return nuxt.payload.data[key]
+    },
   },
 )
 
@@ -56,8 +60,6 @@ watch(() => props.entry?.feed_id, async (entry) => {
     executeIcon()
   }
 }, { immediate: true, flush: 'post' })
-
-const nuxt = useNuxtApp()
 
 const iconUrl = computed(() => {
   const { data, mime_type } = icon.value || nuxt.payload.data[key] || {}

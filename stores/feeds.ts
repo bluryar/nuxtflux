@@ -11,6 +11,7 @@ export const useFeedsStore = defineStore('feed', () => {
   } = useLazyMinifluxFetch('/v1/feeds', {
     immediate: false,
     watch: false,
+    default: () => [],
     transform: (data: IFeed[]) => data.map(i => (new Feed(i))),
   })
   const {
